@@ -19,13 +19,13 @@ for(i in seq_len(nrow(seg))){
 
 library(gplots)
 
-barplot(colSums(m),las=2,names.arg = NA)
+barplot(colSums(m),names.arg = ,las=2,xlab='chrom 7',ylab = 'n. of occurences')
 
 x <- c()
 for(i in 2:length(bs)){
   x <- c(x,bs[i]-bs[i-1])
 }
-barplot(x)
+barplot(x,xlab='chrom 7',ylab = 'distance between two consecutive breakpoints')
 summary(x)
 
 borders <- as.numeric(which(colSums(m)==length(cell_id)))
@@ -35,4 +35,7 @@ mp <- m[,(borders[1]+1):(borders[2]-1)]
 j <- which.max(colSums(mp,na.rm = TRUE))
 
 mp <- mp[order(mp[,j]),]
+
+library("ComplexHeatmap")
+Heatmap(mp,cluster_columns = F,cluster_rows = F,col = c("white","black"),column_title = '<-- chrom 3p -->',row_title = 'cells')
 
