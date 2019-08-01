@@ -16,7 +16,7 @@ dd <- dd[with(dd,order(cell_id,chrom,start,end)),]
 AllCellIDs <- unique(dd$cell_id)
 #combList <- t(combn(AllCellIDs,m = 2))
 
-dir.create(file.path(wd,"tmp.parallel"))
+#dir.create(file.path(wd,"tmp.parallel"))
 
 # write bed for each cell
 writebed <- function(i,AllCellIDs){
@@ -29,7 +29,7 @@ writebed <- function(i,AllCellIDs){
 mclapply(seq(1,length(AllCellIDs),1),writebed,AllCellIDs=AllCellIDs,mc.cores = mc.cores)
 
 # Gene Model
-GeneModel <- "/icgc/dkfzlsdf/analysis/B260/users/n790i/tools/binning_the_genome/humangenes_biomart_GRCh37p13_TranscriptStartEnd.sort.merged.bed"
+GeneModel <- "/icgc/dkfzlsdf/analysis/B260/users/n790i/tools/binning_the_genome/humangenes_biomart_GRCh37p13_TranscriptStartEnd.sort.merged.unique.bed"
 
 # keep one-seg per gene
 selseg <- function(int.sort.bed){
