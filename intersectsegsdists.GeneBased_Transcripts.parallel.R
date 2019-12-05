@@ -1,10 +1,10 @@
 library(parallel)
-mc.cores = 5
+mc.cores = 10
 
 # sample1
 wd <- "/icgc/dkfzlsdf/analysis/B260/projects/chromothripsis_medulloblastoma/single_cell_cn_10x/dna/sample1.genemodel.transcript"
-bed <- read.delim("/icgc/dkfzlsdf/analysis/B260/projects/chromothripsis_medulloblastoma/data/10xCNV/sample1-CNV/outs/node_cnv_calls.bed",comment.char = "#",header = F,col.names = c("chrom","start","end","cell_id","copy_number","event_confidence"))
-info.percell <- read.delim("/icgc/dkfzlsdf/analysis/B260/projects/chromothripsis_medulloblastoma/data/10xCNV/sample1-CNV/outs/per_cell_summary_metrics.csv",header = T,sep = ",",stringsAsFactors = F)
+bed <- read.delim("/icgc/dkfzlsdf/analysis/B260/projects/chromothripsis_medulloblastoma/data/10xCNV/STP/STP-Nuclei/outs/node_cnv_calls.bed",comment.char = "#",header = F,col.names = c("chrom","start","end","cell_id","copy_number","event_confidence"))
+info.percell <- read.delim("/icgc/dkfzlsdf/analysis/B260/projects/chromothripsis_medulloblastoma/data/10xCNV/STP/STP-Nuclei/outs/per_cell_summary_metrics.csv",header = T,sep = ",",stringsAsFactors = F)
 
 setwd(wd)
 
@@ -12,18 +12,22 @@ setwd(wd)
 dd <- merge(x = bed,y = info.percell,by = "cell_id",all.y = T)
 dd <- dd[with(dd,order(cell_id,chrom,start,end)),]
 
-# get all combinations
 AllCellIDs <- unique(dd$cell_id)
-#combList <- t(combn(AllCellIDs,m = 2))
 
-#dir.create(file.path(wd,"tmp.parallel"))
+dir.create(file.path(wd,"tmp.parallel"))
+dir.create(file.path(wd,"tmp.parallel","barcode_labels"))
 
 # write bed for each cell
 writebed <- function(i,AllCellIDs){
   cell <- AllCellIDs[i]
-  cell.dd <- dd[which(dd$cell_id == cell),c("chrom","start","end","copy_number","cell_id")]
+  cell.dd <- dd[which(dd$cell_id == cell),c("chrom","start","end","copy_number","cell_id","barcode")]
+  barcode <- cell.dd$barcode[1]
+  # use cell id
   cell.bed <- file.path(wd,"tmp.parallel",paste0("cellid_",cell,".bed"))
-  write.table(cell.dd,file = cell.bed,quote = F,col.names = F,row.names = F,sep = "\t")
+  write.table(cell.dd[c(1:4,5)],file = cell.bed,quote = F,col.names = F,row.names = F,sep = "\t")
+  # use barcode
+  cell.bed <- file.path(wd,"tmp.parallel","barcode_labels",paste0("cellid_",barcode,".bed"))
+  write.table(cell.dd[c(1:4,5)],file = cell.bed,quote = F,col.names = F,row.names = F,sep = "\t")
 }
 
 mclapply(seq(1,length(AllCellIDs),1),writebed,AllCellIDs=AllCellIDs,mc.cores = mc.cores)
