@@ -1,4 +1,4 @@
-library(parallel)
+library( parallel )
 mc.cores = 10
 
 # sample1
@@ -26,7 +26,7 @@ writebed <- function(i,AllCellIDs){
   cell.bed <- file.path(wd,"tmp.parallel",paste0("cellid_",cell,".bed"))
   write.table(cell.dd[c(1:4,5)],file = cell.bed,quote = F,col.names = F,row.names = F,sep = "\t")
   # use barcode
-  cell.bed <- file.path(wd,"tmp.parallel","barcode_labels",paste0("cellid_",barcode,".bed"))
+  cell.bed <- file.path(wd,"tmp.parallel","barcode_labels",paste0("cellbarcode_",barcode,".bed"))
   write.table(cell.dd[c(1:4,5)],file = cell.bed,quote = F,col.names = F,row.names = F,sep = "\t")
 }
 
